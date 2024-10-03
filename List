@@ -1,0 +1,51 @@
+mkdir item-list-api
+cd item-list-api
+npm init -y
+npm install express
+const express = require('express');
+const app = express();
+const port = 3000; // Replace with your desired port
+
+// In-memory storage for items
+let items = [];
+
+// GET /items: Retrieve all items
+app.get('/items', (req, res) => {
+    res.json(items);
+});
+
+// POST /items: Add a new item
+app.post('/items', (req, res) => {
+    const newItem = req.body;
+    items.push(newItem);
+    res.status(201).json(newItem);
+});
+
+// PUT /items/:id: Update an existing item
+app.put('/items/:id', (req, res) => {
+    const itemId = req.params.id;
+    const updatedItem = req.body;
+    const index = items.findIndex(item => item.id === itemId);
+    if (index !== -1) {
+        items[index] = updatedItem;
+        res.json(updatedItem);
+    } else {
+        res.status(404).json({ error: 'Item not found' });
+    }
+});
+
+// DELETE /items/:id: Delete an item
+app.delete('/items/:id', (req, res) => {
+    const itemId = req.params.id;
+    const index = items.findIndex(item => item.id === itemId);
+    if (index !== -1) {
+        items.splice(index, 1);
+        res.sendStatus(204);
+    } else {
+        res.status(404).json({ error: 'Item not found' });
+    }
+});
+
+app.listen(port, () => {
+    console.log(`Server listening on port ${port}`);
+});
